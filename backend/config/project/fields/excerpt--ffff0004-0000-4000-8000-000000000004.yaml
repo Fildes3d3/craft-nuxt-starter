@@ -1,0 +1,17 @@
+columnSuffix: null
+handle: excerpt
+instructions: 'Short summary shown on listing pages.'
+name: Excerpt
+searchable: true
+settings:
+  byteLimit: null
+  charLimit: 500
+  code: false
+  columnType: null
+  initialRows: 3
+  multiline: true
+  placeholder: null
+  uiMode: normal
+translationKeyFormat: null
+translationMethod: site
+type: craft\fields\PlainText

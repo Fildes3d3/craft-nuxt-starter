@@ -1,0 +1,13 @@
+columnSuffix: null
+handle: body
+instructions: 'Rich text content.'
+name: Body
+searchable: true
+settings:
+  ckeConfig: cccc0001-0000-4000-8000-000000000001 # Simple
+  enableSourceEditingForNonAdmins: false
+  showWordCount: false
+  wordLimit: null
+translationKeyFormat: null
+translationMethod: site
+type: craft\ckeditor\Field

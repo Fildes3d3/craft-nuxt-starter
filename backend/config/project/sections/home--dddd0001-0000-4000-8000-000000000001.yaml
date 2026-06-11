@@ -1,0 +1,21 @@
+defaultPlacement: end
+enableVersioning: true
+entryTypes:
+  -
+    uid: eeee0001-0000-4000-8000-000000000001 # Page
+handle: home
+maxAuthors: 1
+name: Home
+previewTargets:
+  -
+    label: 'Primary entry page'
+    refresh: '1'
+    urlFormat: '{url}?token={token}'
+propagationMethod: all
+siteSettings:
+  aaaa0002-0000-4000-8000-000000000002: # Craft Nuxt Starter
+    enabledByDefault: true
+    hasUrls: true
+    template: null
+    uriFormat: __home__
+type: single

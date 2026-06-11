@@ -1,0 +1,57 @@
+color: blue
+description: 'Large heading with supporting text.'
+fieldLayouts:
+  11110003-0000-4000-8000-000000000003:
+    cardThumbAlignment: end
+    tabs:
+      -
+        elementCondition: null
+        elements:
+          -
+            dateAdded: '2026-06-10T00:00:00+00:00'
+            editCondition: null
+            elementCondition: null
+            fieldUid: ffff0001-0000-4000-8000-000000000001 # Heading
+            handle: null
+            includeInCards: true
+            instructions: null
+            label: null
+            providesThumbs: false
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 22220009-0000-4000-8000-000000000009
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            dateAdded: '2026-06-10T00:00:00+00:00'
+            editCondition: null
+            elementCondition: null
+            fieldUid: ffff0002-0000-4000-8000-000000000002 # Text
+            handle: null
+            includeInCards: false
+            instructions: null
+            label: null
+            providesThumbs: false
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 2222000a-0000-4000-8000-00000000000a
+            userCondition: null
+            warning: null
+            width: 100
+        name: Content
+        uid: 2222000b-0000-4000-8000-00000000000b
+        userCondition: null
+handle: heroBlock
+hasTitleField: false
+icon: null
+name: 'Hero Block'
+showSlugField: false
+showStatusField: true
+slugTranslationKeyFormat: null
+slugTranslationMethod: site
+titleFormat: '{type.name}'
+titleTranslationKeyFormat: null
+titleTranslationMethod: site

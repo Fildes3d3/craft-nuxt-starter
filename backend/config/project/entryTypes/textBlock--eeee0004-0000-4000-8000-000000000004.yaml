@@ -1,0 +1,40 @@
+color: green
+description: 'Rich text content block.'
+fieldLayouts:
+  11110004-0000-4000-8000-000000000004:
+    cardThumbAlignment: end
+    tabs:
+      -
+        elementCondition: null
+        elements:
+          -
+            dateAdded: '2026-06-10T00:00:00+00:00'
+            editCondition: null
+            elementCondition: null
+            fieldUid: ffff0003-0000-4000-8000-000000000003 # Body
+            handle: null
+            includeInCards: true
+            instructions: null
+            label: null
+            providesThumbs: false
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 2222000c-0000-4000-8000-00000000000c
+            userCondition: null
+            warning: null
+            width: 100
+        name: Content
+        uid: 2222000d-0000-4000-8000-00000000000d
+        userCondition: null
+handle: textBlock
+hasTitleField: false
+icon: null
+name: 'Text Block'
+showSlugField: false
+showStatusField: true
+slugTranslationKeyFormat: null
+slugTranslationMethod: site
+titleFormat: '{type.name}'
+titleTranslationKeyFormat: null
+titleTranslationMethod: site

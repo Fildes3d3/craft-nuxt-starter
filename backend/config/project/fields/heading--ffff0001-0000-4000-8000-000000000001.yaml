@@ -1,0 +1,17 @@
+columnSuffix: null
+handle: heading
+instructions: 'Section heading.'
+name: Heading
+searchable: true
+settings:
+  byteLimit: null
+  charLimit: 255
+  code: false
+  columnType: null
+  initialRows: 4
+  multiline: false
+  placeholder: null
+  uiMode: normal
+translationKeyFormat: null
+translationMethod: site
+type: craft\fields\PlainText

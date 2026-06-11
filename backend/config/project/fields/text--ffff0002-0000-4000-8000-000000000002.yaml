@@ -1,0 +1,17 @@
+columnSuffix: null
+handle: text
+instructions: 'Short supporting text.'
+name: Text
+searchable: true
+settings:
+  byteLimit: null
+  charLimit: 1000
+  code: false
+  columnType: null
+  initialRows: 3
+  multiline: true
+  placeholder: null
+  uiMode: normal
+translationKeyFormat: null
+translationMethod: site
+type: craft\fields\PlainText

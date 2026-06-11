@@ -1,0 +1,10 @@
+altTranslationKeyFormat: null
+altTranslationMethod: site
+fs: localFiles
+handle: uploads
+name: Uploads
+sortOrder: 1
+titleTranslationKeyFormat: null
+titleTranslationMethod: site
+transformFs: null
+transformSubpath: null

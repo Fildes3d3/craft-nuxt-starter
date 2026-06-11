@@ -1,0 +1,53 @@
+dateModified: 1781112620
+email:
+  fromEmail: admin@example.com
+  fromName: 'Craft Nuxt Starter'
+  transportType: craft\mail\transportadapters\Sendmail
+fs:
+  localFiles:
+    hasUrls: true
+    name: 'Local Files'
+    settings:
+      path: /app/backend/web/uploads
+      url: $UPLOADS_URL
+    type: craft\fs\Local
+meta:
+  __names__:
+    99990001-0000-4000-8000-000000000001: 'Public Schema' # Public Schema
+    aaaa0001-0000-4000-8000-000000000001: Starter # Starter
+    aaaa0002-0000-4000-8000-000000000002: 'Craft Nuxt Starter' # Craft Nuxt Starter
+    bbbb0001-0000-4000-8000-000000000001: Uploads # Uploads
+    cccc0001-0000-4000-8000-000000000001: Simple # Simple
+    dddd0001-0000-4000-8000-000000000001: Home # Home
+    dddd0002-0000-4000-8000-000000000002: Pages # Pages
+    dddd0003-0000-4000-8000-000000000003: Blog # Blog
+    eeee0001-0000-4000-8000-000000000001: Page # Page
+    eeee0002-0000-4000-8000-000000000002: Post # Post
+    eeee0003-0000-4000-8000-000000000003: 'Hero Block' # Hero Block
+    eeee0004-0000-4000-8000-000000000004: 'Text Block' # Text Block
+    eeee0005-0000-4000-8000-000000000005: 'Image Block' # Image Block
+    ffff0001-0000-4000-8000-000000000001: Heading # Heading
+    ffff0002-0000-4000-8000-000000000002: Text # Text
+    ffff0003-0000-4000-8000-000000000003: Body # Body
+    ffff0004-0000-4000-8000-000000000004: Excerpt # Excerpt
+    ffff0005-0000-4000-8000-000000000005: Image # Image
+    ffff0006-0000-4000-8000-000000000006: Caption # Caption
+    ffff0007-0000-4000-8000-000000000007: 'Content Blocks' # Content Blocks
+plugins:
+  ckeditor:
+    edition: standard
+    enabled: true
+    schemaVersion: 3.0.0.0
+system:
+  edition: solo
+  live: true
+  name: 'Craft Nuxt Starter'
+  schemaVersion: 5.10.0.0
+  timeZone: UTC
+users:
+  allowPublicRegistration: false
+  defaultGroup: null
+  photoSubpath: null
+  photoVolumeUid: null
+  require2fa: false
+  requireEmailVerification: true

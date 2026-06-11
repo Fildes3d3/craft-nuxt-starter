@@ -1,0 +1,57 @@
+color: orange
+description: 'Full-width image with optional caption.'
+fieldLayouts:
+  11110005-0000-4000-8000-000000000005:
+    cardThumbAlignment: end
+    tabs:
+      -
+        elementCondition: null
+        elements:
+          -
+            dateAdded: '2026-06-10T00:00:00+00:00'
+            editCondition: null
+            elementCondition: null
+            fieldUid: ffff0005-0000-4000-8000-000000000005 # Image
+            handle: null
+            includeInCards: true
+            instructions: null
+            label: null
+            providesThumbs: true
+            required: true
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 2222000e-0000-4000-8000-00000000000e
+            userCondition: null
+            warning: null
+            width: 100
+          -
+            dateAdded: '2026-06-10T00:00:00+00:00'
+            editCondition: null
+            elementCondition: null
+            fieldUid: ffff0006-0000-4000-8000-000000000006 # Caption
+            handle: null
+            includeInCards: false
+            instructions: null
+            label: null
+            providesThumbs: false
+            required: false
+            tip: null
+            type: craft\fieldlayoutelements\CustomField
+            uid: 2222000f-0000-4000-8000-00000000000f
+            userCondition: null
+            warning: null
+            width: 100
+        name: Content
+        uid: 22220010-0000-4000-8000-000000000010
+        userCondition: null
+handle: imageBlock
+hasTitleField: false
+icon: null
+name: 'Image Block'
+showSlugField: false
+showStatusField: true
+slugTranslationKeyFormat: null
+slugTranslationMethod: site
+titleFormat: '{type.name}'
+titleTranslationKeyFormat: null
+titleTranslationMethod: site

@@ -1,0 +1,45 @@
+columnSuffix: null
+handle: contentBlocks
+instructions: 'Add and order the content blocks that make up this page.'
+name: 'Content Blocks'
+searchable: false
+settings:
+  createButtonLabel: 'Add block'
+  defaultIndexViewMode: cards
+  enableVersioning: false
+  entryTypes:
+    -
+      __assoc__:
+        -
+          - uid
+          - eeee0003-0000-4000-8000-000000000003 # Hero Block
+        -
+          - group
+          - 'Content Blocks'
+    -
+      __assoc__:
+        -
+          - uid
+          - eeee0004-0000-4000-8000-000000000004 # Text Block
+        -
+          - group
+          - 'Content Blocks'
+    -
+      __assoc__:
+        -
+          - uid
+          - eeee0005-0000-4000-8000-000000000005 # Image Block
+        -
+          - group
+          - 'Content Blocks'
+  includeTableView: false
+  maxEntries: null
+  minEntries: null
+  pageSize: null
+  propagationKeyFormat: null
+  propagationMethod: all
+  showCardsInGrid: false
+  viewMode: blocks
+translationKeyFormat: null
+translationMethod: site
+type: craft\fields\Matrix

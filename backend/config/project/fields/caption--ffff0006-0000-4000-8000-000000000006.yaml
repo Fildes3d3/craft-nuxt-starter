@@ -1,0 +1,17 @@
+columnSuffix: null
+handle: caption
+instructions: 'Optional image caption.'
+name: Caption
+searchable: false
+settings:
+  byteLimit: null
+  charLimit: 255
+  code: false
+  columnType: null
+  initialRows: 1
+  multiline: false
+  placeholder: null
+  uiMode: normal
+translationKeyFormat: null
+translationMethod: site
+type: craft\fields\PlainText

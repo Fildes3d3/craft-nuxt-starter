@@ -1,0 +1,9 @@
+isPublic: true
+name: 'Public Schema'
+scope:
+  - 'sites.aaaa0002-0000-4000-8000-000000000002:read' # Craft Nuxt Starter
+  - 'sections.dddd0001-0000-4000-8000-000000000001:read' # Home
+  - 'sections.dddd0002-0000-4000-8000-000000000002:read' # Pages
+  - 'sections.dddd0003-0000-4000-8000-000000000003:read' # Blog
+  - 'nestedentryfields.ffff0007-0000-4000-8000-000000000007:read' # Content Blocks
+  - 'volumes.bbbb0001-0000-4000-8000-000000000001:read' # Uploads
