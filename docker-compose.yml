@@ -1,0 +1,86 @@
+# =============================================================================
+# craft-nuxt-starter — local development stack
+#
+#   http://localhost        → Nuxt (via nginx)
+#   http://localhost/admin  → Craft CMS control panel
+#   http://localhost/api    → Craft GraphQL endpoint
+#
+# First run: `make setup` (see README). After that: `make up` / `make down`.
+# =============================================================================
+
+volumes:
+  db-data:
+  nuxt_modules:   # keeps node_modules inside the container, off the bind mount
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # MySQL 8
+  # ---------------------------------------------------------------------------
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      MYSQL_DATABASE:      "${DB_DATABASE}"
+      MYSQL_USER:          "${DB_USER}"
+      MYSQL_PASSWORD:      "${DB_PASSWORD}"
+    volumes:
+      - db-data:/var/lib/mysql
+    ports:
+      - "${DB_FORWARD_PORT:-13306}:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+  # ---------------------------------------------------------------------------
+  # PHP-FPM — Craft CMS 5
+  # ---------------------------------------------------------------------------
+  php-fpm:
+    build: ./docker/php-fpm
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/app:cached
+
+  # ---------------------------------------------------------------------------
+  # Nuxt 4 — dev server with HMR
+  # ---------------------------------------------------------------------------
+  nuxt:
+    build:
+      context: .
+      dockerfile: docker/nuxt/Dockerfile
+      target: dev
+    depends_on:
+      - php-fpm
+    ports:
+      - "3000:3000"     # Nuxt dev server (direct access)
+      - "24678:24678"   # Vite HMR websocket
+    volumes:
+      - .:/app
+      - nuxt_modules:/app/frontend/node_modules
+    environment:
+      # Values come from the root .env (compose interpolation), with sane
+      # defaults. Note: these env vars take precedence over frontend/.env
+      # inside Docker — edit the root .env to change them.
+      NUXT_PUBLIC_GQL_API_HOST:  "${NUXT_PUBLIC_GQL_API_HOST:-http://localhost/api}"
+      NUXT_PUBLIC_CMS_ADMIN_URL: "${NUXT_PUBLIC_CMS_ADMIN_URL:-http://localhost/admin}"
+      # Server-side (SSR) GraphQL endpoint — internal Docker network, no
+      # hairpin NAT. "web" is the nginx service below.
+      NUXT_GQL_API_HOST_SERVER:  "${NUXT_GQL_API_HOST_SERVER:-http://web/api}"
+
+  # ---------------------------------------------------------------------------
+  # nginx — single entry point on http://localhost
+  # ---------------------------------------------------------------------------
+  web:
+    image: nginx:1.27
+    depends_on:
+      - php-fpm
+      - nuxt
+    volumes:
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - .:/app
+    ports:
+      - "80:80"
