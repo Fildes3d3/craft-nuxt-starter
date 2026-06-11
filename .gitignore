@@ -1,0 +1,27 @@
+# Environment
+.env
+backend/.env
+frontend/.env
+
+# Dependencies
+backend/vendor/
+frontend/node_modules/
+
+# Craft runtime
+backend/storage/*
+!backend/storage/.gitkeep
+backend/web/cpresources/
+backend/web/uploads/*
+!backend/web/uploads/.gitkeep
+
+# Nuxt
+frontend/.nuxt/
+frontend/.output/
+frontend/dist/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.log
+backend/config/license.key*
