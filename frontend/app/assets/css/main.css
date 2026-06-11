@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+/* Minimal design tokens — replace with your own design system */
+:root {
+  --max-w: 720px;
+}
+
+body {
+  @apply bg-white text-neutral-900 antialiased;
+}
+
+/* Rendered CKEditor content */
+.prose-body h2 { @apply text-2xl font-semibold mt-10 mb-4; }
+.prose-body h3 { @apply text-xl font-semibold mt-8 mb-3; }
+.prose-body p  { @apply leading-relaxed mb-5; }
+.prose-body a  { @apply underline underline-offset-2 hover:text-neutral-500; }
+.prose-body ul { @apply list-disc pl-6 mb-5 space-y-1; }
+.prose-body ol { @apply list-decimal pl-6 mb-5 space-y-1; }
+.prose-body blockquote { @apply border-l-4 border-neutral-200 pl-4 italic text-neutral-600 my-6; }
+.prose-body pre { @apply bg-neutral-900 text-neutral-100 rounded-lg p-4 text-sm overflow-x-auto my-6; }
