@@ -1,4 +1,7 @@
-FROM php:8.2-fpm-bullseye
+# PHP 8.2.35 patches PHP2Shell (CVE-2026-109618 / CVE-2026-109619).
+# Pinned to bookworm because the bullseye variant is EOL and never received
+# the fix — use a patched 8.2.x bookworm tag, not 8.2-fpm-bullseye.
+FROM php:8.2.35-fpm-bookworm
 
 ENV DEBIAN_FRONTEND=noninteractive
 
