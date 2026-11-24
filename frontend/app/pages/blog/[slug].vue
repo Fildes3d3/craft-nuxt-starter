@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { blogPostGql } from '~/queries/content'
+import { getBlogPostGql } from '~/queries/content'
 import type { BlogPostData } from '~/types/content'
 
 // Remount on every path change — see app/pages/[slug].vue for why.
@@ -13,7 +13,7 @@ const slug  = String(route.params.slug)
 const { query } = useCraftQuery()
 
 const { data, error } = await useAsyncData(`blog-${slug}`, () =>
-  query<BlogPostData>(blogPostGql, { slug: [slug] }),
+  query<BlogPostData>(getBlogPostGql(slug)),
 )
 
 if (error.value) {

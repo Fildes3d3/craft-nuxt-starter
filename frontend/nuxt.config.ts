@@ -15,19 +15,22 @@ export default defineNuxtConfig({
   // into the bundle and defeat runtime overriding.
   runtimeConfig: {
     public: {
-      // Browser-side GraphQL endpoint.
-      // Runtime override: NUXT_PUBLIC_GQL_API_HOST
-      gqlApiHost: 'http://localhost/api',
       // Craft control-panel URL, used for editor-facing links.
       // Runtime override: NUXT_PUBLIC_CMS_ADMIN_URL
       cmsAdminUrl: 'http://localhost/admin',
     },
-    // Server-side (SSR) GraphQL endpoint — stays on the internal Docker
-    // network ("web" is the nginx service), avoiding hairpin NAT and SSL.
+    // Craft GraphQL endpoint — server side only. Craft's GraphQL is not
+    // public: the browser goes through Nuxt's /_gql allowlist, and only the
+    // Nuxt server talks to Craft. "web:8080" is nginx's internal-only server
+    // block on the Docker network (no hairpin NAT, no SSL, not published).
     //
     // ⚠ Naming gotcha: private runtimeConfig keys are only overridable at
     // runtime by env vars with the NUXT_ prefix → NUXT_GQL_API_HOST_SERVER.
-    gqlApiHostServer: 'http://web/api',
+    gqlApiHostServer: 'http://web:8080/api',
+    // Bearer token for Craft's private "Nuxt (server only)" schema.
+    // `make setup` creates it and writes GQL_TOKEN to the root .env.
+    // Runtime override: NUXT_GQL_TOKEN
+    gqlToken: '',
   },
 
   css: ['~/assets/css/main.css'],

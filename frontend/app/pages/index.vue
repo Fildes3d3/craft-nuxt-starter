@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { homeGql } from '~/queries/content'
+import { getHomeGql } from '~/queries/content'
 import type { PageData } from '~/types/content'
 
 const { query } = useCraftQuery()
@@ -7,7 +7,7 @@ const { cmsAdminUrl } = useRuntimeConfig().public
 
 // useAsyncData (not a raw await) so GraphQL errors surface as a Nuxt error
 // page instead of being silently swallowed by <Suspense>.
-const { data, error } = await useAsyncData('home', () => query<PageData>(homeGql))
+const { data, error } = await useAsyncData('home', () => query<PageData>(getHomeGql()))
 
 if (error.value) {
   throw createError({ statusCode: 500, statusMessage: error.value.message })

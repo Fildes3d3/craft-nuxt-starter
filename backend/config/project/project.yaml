@@ -1,4 +1,4 @@
-dateModified: 1781112620
+dateModified: 1795392000
 email:
   fromEmail: admin@example.com
   fromName: 'Craft Nuxt Starter'
@@ -14,6 +14,7 @@ fs:
 meta:
   __names__:
     99990001-0000-4000-8000-000000000001: 'Public Schema' # Public Schema
+    99990002-0000-4000-8000-000000000002: 'Nuxt (server only)' # Nuxt (server only)
     aaaa0001-0000-4000-8000-000000000001: Starter # Starter
     aaaa0002-0000-4000-8000-000000000002: 'Craft Nuxt Starter' # Craft Nuxt Starter
     bbbb0001-0000-4000-8000-000000000001: Uploads # Uploads
@@ -42,7 +43,7 @@ system:
   edition: solo
   live: true
   name: 'Craft Nuxt Starter'
-  schemaVersion: 5.10.0.0
+  schemaVersion: 5.12.0.2
   timeZone: UTC
 users:
   allowPublicRegistration: false

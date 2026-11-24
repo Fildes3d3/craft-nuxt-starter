@@ -1,10 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
+import type { CraftGql } from '~/queries/types'
 
 // ── mocks ────────────────────────────────────────────────────────────────────
 // Note: we deliberately do NOT mock useRuntimeConfig — Nuxt's test runtime
-// needs the real one to boot. The endpoint assertions use the defaults from
-// nuxt.config.ts instead.
+// needs the real one to boot. Tests run client side, so every call goes
+// through Nuxt's /_gql route.
 
 const { previewTokenMock } = vi.hoisted(() => ({
   // Duck-typed ref — vi.hoisted runs before module imports, so we can't
@@ -18,43 +19,60 @@ mockNuxtImport('usePreviewToken', () => () => previewTokenMock)
 interface GqlFetchOptions {
   method: string
   headers: Record<string, string>
-  body: { query: string, variables?: Record<string, unknown> }
+  body: { op?: string, query?: string, variables?: Record<string, unknown> }
 }
 
 const fetchSpy = vi.fn<(url: string, options: GqlFetchOptions) => Promise<unknown>>()
 vi.stubGlobal('$fetch', fetchSpy)
 
+const homeOp: CraftGql = { op: 'home', query: 'query Home { entry { title } }' }
+const pageOp: CraftGql = {
+  op: 'page',
+  query: 'query Page($slug: [String]) { entry(slug: $slug) { title } }',
+  variables: { slug: 'about' },
+}
+
 // ── tests ────────────────────────────────────────────────────────────────────
 
-describe('useCraftQuery', () => {
+describe('useCraftQuery (browser)', () => {
   beforeEach(() => {
     fetchSpy.mockReset()
     previewTokenMock.value = null
   })
 
-  it('POSTs the query to the public endpoint and returns response.data', async () => {
+  it('POSTs the operation name to /_gql and returns response.data', async () => {
     fetchSpy.mockResolvedValue({ data: { entry: { title: 'Home' } } })
 
     const { query } = useCraftQuery()
-    const result = await query<{ entry: { title: string } }>('query Home { entry { title } }')
+    const result = await query<{ entry: { title: string } }>(homeOp)
 
     expect(result.entry.title).toBe('Home')
 
     const [url, options] = fetchSpy.mock.calls[0]!
-    // Client-side in the test environment → public endpoint from nuxt.config defaults
-    expect(url).toBe('http://localhost/api')
+    expect(url).toBe('/_gql')
     expect(options.method).toBe('POST')
-    expect(options.body.query).toContain('query Home')
+    expect(options.body.op).toBe('home')
+  })
+
+  it('never sends query text or a token from the browser', async () => {
+    fetchSpy.mockResolvedValue({ data: {} })
+
+    const { query } = useCraftQuery()
+    await query(homeOp)
+
+    const [, options] = fetchSpy.mock.calls[0]!
+    expect(options.body.query).toBeUndefined()
+    expect(options.headers.Authorization).toBeUndefined()
   })
 
   it('passes variables through to the request body', async () => {
     fetchSpy.mockResolvedValue({ data: {} })
 
     const { query } = useCraftQuery()
-    await query('query Page($slug: [String]) { entry(slug: $slug) { title } }', { slug: ['about'] })
+    await query(pageOp)
 
     const [, options] = fetchSpy.mock.calls[0]!
-    expect(options.body.variables).toEqual({ slug: ['about'] })
+    expect(options.body.variables).toEqual({ slug: 'about' })
   })
 
   it('throws when the GraphQL response contains errors', async () => {
@@ -65,7 +83,7 @@ describe('useCraftQuery', () => {
 
     const { query } = useCraftQuery()
 
-    await expect(query('query { nope }')).rejects.toThrow(/Cannot query field/)
+    await expect(query(homeOp)).rejects.toThrow(/Cannot query field/)
   })
 
   it('sends X-Craft-Token header when a preview token is active', async () => {
@@ -73,7 +91,7 @@ describe('useCraftQuery', () => {
     fetchSpy.mockResolvedValue({ data: {} })
 
     const { query } = useCraftQuery()
-    await query('query { entry { title } }')
+    await query(homeOp)
 
     const [, options] = fetchSpy.mock.calls[0]!
     expect(options.headers['X-Craft-Token']).toBe('preview-token-123')
@@ -83,7 +101,7 @@ describe('useCraftQuery', () => {
     fetchSpy.mockResolvedValue({ data: {} })
 
     const { query } = useCraftQuery()
-    await query('query { entry { title } }')
+    await query(homeOp)
 
     const [, options] = fetchSpy.mock.calls[0]!
     expect(options.headers['X-Craft-Token']).toBeUndefined()

@@ -4,6 +4,8 @@
 
 One command gives you a running stack: Craft in headless mode with GraphQL, a server-rendered Nuxt 4 frontend, live preview, Docker networking that actually works, and seeded demo content — so you start from *working*, not from a blank page.
 
+Craft's GraphQL is **not public**: only the Nuxt server can query it, with a private-schema token. See [Security](#security).
+
 [![CI](https://github.com/Fildes3d3/craft-nuxt-starter/actions/workflows/ci.yml/badge.svg)](https://github.com/Fildes3d3/craft-nuxt-starter/actions/workflows/ci.yml)
 [![Craft CMS 5](https://img.shields.io/badge/Craft%20CMS-5.x-e5422b?logo=craftcms&logoColor=white)](https://craftcms.com)
 [![Nuxt 4](https://img.shields.io/badge/Nuxt-4.x-00DC82?logo=nuxt.js&logoColor=white)](https://nuxt.com)
@@ -29,8 +31,7 @@ That's it. The first run takes a few minutes (image builds + dependency installs
 | http://localhost | Nuxt frontend (SSR, with HMR in dev) |
 | http://localhost/blog | Blog listing from the seeded channel |
 | http://localhost/admin | Craft control panel — `admin` / `password` |
-| http://localhost/admin/graphiql | GraphiQL schema explorer |
-| http://localhost/api | GraphQL endpoint (public schema) |
+| http://localhost/admin/graphiql | GraphiQL schema explorer (pick the "Nuxt (server only)" schema) |
 
 Edit the Home entry in the control panel, hit save, refresh `localhost`. That round trip is the whole development loop.
 
@@ -40,8 +41,9 @@ Edit the Home entry in the control panel, hit save, refresh `localhost`. That ro
 2. Builds and starts four containers: **MySQL 8**, **PHP-FPM** (Craft), **Node** (Nuxt dev server), **nginx** (single entry point on port 80)
 3. `composer install` from the committed lock file
 4. Generates a Craft security key and installs Craft non-interactively
-5. Applies the project config — sections, fields, entry types, GraphQL schema all come from YAML in `backend/config/project/`
-6. Seeds demo content: a Home page built from matrix blocks, an About page, two blog posts
+5. Applies the project config — sections, fields, entry types, GraphQL schemas all come from YAML in `backend/config/project/`
+6. Creates a token for the private "Nuxt (server only)" GraphQL schema and writes it to the root `.env` as `GQL_TOKEN` (`make gql-token`)
+7. Seeds demo content: a Home page built from matrix blocks, an About page, two blog posts
 
 Idempotent — safe to run again. `make nuke` wipes the database for a true fresh start.
 
@@ -53,13 +55,16 @@ graph LR
 
     subgraph Docker network
         nginx -->|"/ (everything else)"| Nuxt["Nuxt 4<br/>SSR + HMR :3000"]
-        nginx -->|"/admin, /api, /uploads"| PHP["PHP-FPM<br/>Craft CMS 5"]
-        Nuxt -->|"SSR GraphQL<br/>http://web/api"| nginx
+        nginx -->|"/admin, /uploads"| PHP["PHP-FPM<br/>Craft CMS 5"]
+        Nuxt -->|"GraphQL + token<br/>http://web:8080/api"| nginx
         PHP --> MySQL[(MySQL 8)]
     end
 ```
 
-The detail that matters: **server-side rendering queries GraphQL over the internal Docker network** (`http://web/api`), while the browser uses the public URL (`http://localhost/api`). This split avoids hairpin-NAT and SSL issues that bite most headless setups in production — and it's controlled entirely by two env vars.
+Two details matter:
+
+- **Only the Nuxt server talks to Craft.** During SSR it queries GraphQL over the internal Docker network (`http://web:8080/api`, an nginx server block that isn't published), which avoids the hairpin-NAT and SSL issues that bite most headless setups in production.
+- **The browser never talks to Craft.** On client-side navigation it posts an operation name to Nuxt's `/_gql` route, and the Nuxt server runs the matching query from an allowlist.
 
 ## Project structure
 
@@ -72,17 +77,20 @@ The detail that matters: **server-side rendering queries GraphQL over the intern
 │   ├── scripts/seed.php      # idempotent demo content seeder
 │   └── composer.json
 └── frontend/                 # Nuxt 4
-    └── app/
-        ├── composables/
-        │   ├── useCraftQuery.ts    # minimal GraphQL client (SSR-aware)
-        │   └── usePreviewToken.ts  # Craft live-preview token handling
-        ├── components/blocks/      # one component per matrix block type
-        ├── queries/content.ts      # GraphQL documents
-        ├── types/content.ts        # typed payloads
-        └── pages/
-            ├── index.vue           # Home single
-            ├── [slug].vue          # Pages structure
-            └── blog/               # Blog channel (listing + detail)
+    ├── app/
+    │   ├── composables/
+    │   │   ├── useCraftQuery.ts    # minimal GraphQL client (SSR-aware)
+    │   │   └── usePreviewToken.ts  # Craft live-preview token handling
+    │   ├── components/blocks/      # one component per matrix block type
+    │   ├── queries/content.ts      # named GraphQL operations
+    │   ├── types/content.ts        # typed payloads
+    │   └── pages/
+    │       ├── index.vue           # Home single
+    │       ├── [slug].vue          # Pages structure
+    │       └── blog/               # Blog channel (listing + detail)
+    └── server/
+        ├── routes/_gql.post.ts     # browser → Craft, allowlisted operations only
+        └── utils/gqlOps.ts         # the allowlist
 ```
 
 ## Content model
@@ -106,9 +114,11 @@ The entire model lives in `backend/config/project/` as YAML. Change something in
 const { query } = useCraftQuery()
 
 const { data, error } = await useAsyncData('home', () =>
-  query<PageData>(homeGql),
+  query<PageData>(getHomeGql()),
 )
 ```
+
+Each query is a named operation built in `app/queries/content.ts`. To add one, write its builder there and register it in `server/utils/gqlOps.ts` with a validator for its variables. The browser can only run operations listed there.
 
 Two patterns here are deliberate, learned from running this stack in production:
 
@@ -122,7 +132,7 @@ Already wired. In Craft, open any entry and hit **Preview** — the Nuxt fronten
 
 - Craft appends `?token=…` to the preview URL
 - `usePreviewToken()` reads it (and persists it in a short-lived cookie for client-side navigation)
-- `useCraftQuery()` forwards it as the `X-Craft-Token` header, so GraphQL serves draft content
+- `useCraftQuery()` forwards it as the `X-Craft-Token` header (via `/_gql` in the browser), so GraphQL serves draft content
 
 ## Day-to-day commands
 
@@ -133,9 +143,10 @@ make logs          # all logs
 make logs-nuxt     # just the Nuxt dev server
 make shell-php     # bash inside the PHP container
 make craft c="clear-caches/all"   # any Craft console command
+make gql-token     # create the private GraphQL token if .env has none
 make lint          # ESLint (inside the container — no host Node needed)
 make typecheck     # vue-tsc full type check (strict mode)
-make test          # Vitest suite (components + composables)
+make test          # Vitest suite (components, composables, GraphQL allowlist)
 make nuke          # delete everything incl. database, start over
 ```
 
@@ -145,7 +156,9 @@ Linting (`@nuxt/eslint` flat config), type checking (`vue-tsc`, strict mode via 
 
 **Blank page, no error, but GraphQL works in GraphiQL** — you're probably `await`ing a query without `useAsyncData`. See [Querying content](#querying-content).
 
-**SSR can't reach GraphQL but the browser can** — the SSR endpoint must be reachable *from inside the Nuxt container*. Use the internal service URL (`http://web/api`), never `localhost` (that's the container itself) and ideally not your public HTTPS domain (hairpin NAT).
+**Pages are empty or error with "Missing Authorization header"** — Nuxt has no GraphQL token. Run `make gql-token`, which creates one and restarts Nuxt. If you upgraded an existing clone, run `make craft c="up"` first so the private schema exists.
+
+**SSR can't reach GraphQL** — the endpoint must be reachable *from inside the Nuxt container*. Use the internal service URL (`http://web:8080/api`), never `localhost` (that's the container itself) and not your public HTTPS domain (hairpin NAT).
 
 **Changed `nuxt.config.ts` but nothing happened** — restart the Nuxt container: `docker compose restart nuxt`. Config isn't hot-reloaded.
 
@@ -153,9 +166,22 @@ Linting (`@nuxt/eslint` flat config), type checking (`vue-tsc`, strict mode via 
 
 **`make setup` fails at composer with security advisories** — your clone is old and the locked Craft version has since had advisories published. Run `make shell-php`, then `composer update --working-dir=/app/backend`, then `php /app/backend/craft up`.
 
+## Security
+
+Craft's GraphQL is not reachable anonymously:
+
+- **The public GraphQL token is off**, so Craft refuses anonymous queries on every route ("Missing Authorization header"), including requests that pass the action in a POST body.
+- **Nuxt queries a private schema**, "Nuxt (server only)", with a bearer token (`NUXT_GQL_TOKEN`) that stays in server-only runtime config.
+- **The browser goes through `/_gql`**, which accepts only named operations from an allowlist and validates their variables. Query text from a client is never forwarded.
+- **nginx returns 404** for public `/api` and for `?p=actions/graphql/…`, as defence in depth.
+
+Public GraphQL schemas with read access have had unauthenticated vulnerabilities, and mass scanners look for them, so if only your own front end needs the data, keep it like this. Keep Craft patched too: `composer audit` in `backend/` lists known advisories.
+
+`backend/composer.json` ignores nine Twig advisories by ID, because every Craft 5.12 release pins Twig 3.30.0. They are template-sandbox bypasses that need a control-panel user who can write templates. Remove the exception once Craft allows Twig 3.31.1 or later.
+
 ## Production
 
-This starter is deliberately scoped to local development. If you take it to production, the short version of what changes: build the Nuxt image with `target: prod` (already in the Dockerfile), put real secrets in the env files, terminate SSL at your proxy, and keep the SSR GraphQL URL on the internal network.
+This starter is deliberately scoped to local development. If you take it to production, the short version of what changes: build the Nuxt image with `target: prod` (already in the Dockerfile), put real secrets in the env files (including `GQL_TOKEN`), terminate SSL at your proxy, keep Craft's GraphQL on the internal network, and keep the public GraphQL token off.
 
 ## License
 

@@ -3,7 +3,9 @@
 #
 #   http://localhost        → Nuxt (via nginx)
 #   http://localhost/admin  → Craft CMS control panel
-#   http://localhost/api    → Craft GraphQL endpoint
+#
+# Craft's GraphQL is not public. Nuxt reaches it on nginx's internal :8080
+# server block with a private-schema token (GQL_TOKEN, created by make setup).
 #
 # First run: `make setup` (see README). After that: `make up` / `make down`.
 # =============================================================================
@@ -65,11 +67,12 @@ services:
       # Values come from the root .env (compose interpolation), with sane
       # defaults. Note: these env vars take precedence over frontend/.env
       # inside Docker — edit the root .env to change them.
-      NUXT_PUBLIC_GQL_API_HOST:  "${NUXT_PUBLIC_GQL_API_HOST:-http://localhost/api}"
       NUXT_PUBLIC_CMS_ADMIN_URL: "${NUXT_PUBLIC_CMS_ADMIN_URL:-http://localhost/admin}"
-      # Server-side (SSR) GraphQL endpoint — internal Docker network, no
-      # hairpin NAT. "web" is the nginx service below.
-      NUXT_GQL_API_HOST_SERVER:  "${NUXT_GQL_API_HOST_SERVER:-http://web/api}"
+      # Server-only GraphQL endpoint — nginx's internal :8080 block on the
+      # Docker network ("web" is the nginx service below). Not published.
+      NUXT_GQL_API_HOST_SERVER:  "${NUXT_GQL_API_HOST_SERVER:-http://web:8080/api}"
+      # Private-schema token. Server side only; never sent to the browser.
+      NUXT_GQL_TOKEN:            "${GQL_TOKEN:-}"
 
   # ---------------------------------------------------------------------------
   # nginx — single entry point on http://localhost

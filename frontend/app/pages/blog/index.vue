@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { blogListGql } from '~/queries/content'
+import { getBlogListGql } from '~/queries/content'
 import type { BlogListData } from '~/types/content'
 
 const { query } = useCraftQuery()
 const { cmsAdminUrl } = useRuntimeConfig().public
 
 const { data, error } = await useAsyncData('blog-list', () =>
-  query<BlogListData>(blogListGql),
+  query<BlogListData>(getBlogListGql()),
 )
 
 if (error.value) {

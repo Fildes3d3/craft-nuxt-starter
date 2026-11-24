@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { pageGql } from '~/queries/content'
+import { getPageGql } from '~/queries/content'
 import type { PageData } from '~/types/content'
 
 // Remount this component whenever the path changes. Without this, navigating
@@ -15,7 +15,7 @@ const slug  = String(route.params.slug)
 const { query } = useCraftQuery()
 
 const { data, error } = await useAsyncData(`page-${slug}`, () =>
-  query<PageData>(pageGql, { slug: [slug] }),
+  query<PageData>(getPageGql(slug)),
 )
 
 if (error.value) {
