@@ -5,7 +5,7 @@
     "prefer-stable": true,
     "require": {
         "craftcms/ckeditor": "^4.11",
-        "craftcms/cms": "^5.12.2",
+        "craftcms/cms": "^5.12.4",
         "vlucas/phpdotenv": "^5.4.0"
     },
     "require-dev": {
@@ -21,21 +21,6 @@
         "optimize-autoloader": true,
         "platform": {
             "php": "8.2"
-        },
-        "policy": {
-            "advisories": {
-                "ignore-id": {
-                    "PKSA-tfq6-ydd8-dhbf": "Craft 5.12.x pins twig/twig ~3.30.0; these are Twig sandbox bypasses that need a control-panel user who can write templates. Remove once Craft allows twig >=3.31.1.",
-                    "PKSA-v6ry-d7gg-9dnc": "Craft 5.12.x pins twig/twig ~3.30.0; these are Twig sandbox bypasses that need a control-panel user who can write templates. Remove once Craft allows twig >=3.31.1.",
-                    "PKSA-pkw5-3qxt-b654": "Craft 5.12.x pins twig/twig ~3.30.0; these are Twig sandbox bypasses that need a control-panel user who can write templates. Remove once Craft allows twig >=3.31.1.",
-                    "PKSA-dq27-x2jc-ksbp": "Craft 5.12.x pins twig/twig ~3.30.0; these are Twig sandbox bypasses that need a control-panel user who can write templates. Remove once Craft allows twig >=3.31.1.",
-                    "PKSA-szz8-81wy-3x8z": "Craft 5.12.x pins twig/twig ~3.30.0; these are Twig sandbox bypasses that need a control-panel user who can write templates. Remove once Craft allows twig >=3.31.1.",
-                    "PKSA-hs2m-ms65-2zgg": "Craft 5.12.x pins twig/twig ~3.30.0; these are Twig sandbox bypasses that need a control-panel user who can write templates. Remove once Craft allows twig >=3.31.1.",
-                    "PKSA-2xyw-sdzb-ywxg": "Craft 5.12.x pins twig/twig ~3.30.0; these are Twig sandbox bypasses that need a control-panel user who can write templates. Remove once Craft allows twig >=3.31.1.",
-                    "PKSA-k9x8-rxqp-rkb4": "Craft 5.12.x pins twig/twig ~3.30.0; these are Twig sandbox bypasses that need a control-panel user who can write templates. Remove once Craft allows twig >=3.31.1.",
-                    "PKSA-hjpc-r7p2-zyfx": "Craft 5.12.x pins twig/twig ~3.30.0; these are Twig sandbox bypasses that need a control-panel user who can write templates. Remove once Craft allows twig >=3.31.1."
-                }
-            }
         }
     }
 }

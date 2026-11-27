@@ -177,8 +177,6 @@ Craft's GraphQL is not reachable anonymously:
 
 Public GraphQL schemas with read access have had unauthenticated vulnerabilities, and mass scanners look for them, so if only your own front end needs the data, keep it like this. Keep Craft patched too: `composer audit` in `backend/` lists known advisories.
 
-`backend/composer.json` ignores nine Twig advisories by ID, because every Craft 5.12 release pins Twig 3.30.0. They are template-sandbox bypasses that need a control-panel user who can write templates. Remove the exception once Craft allows Twig 3.31.1 or later.
-
 ## Production
 
 This starter is deliberately scoped to local development. If you take it to production, the short version of what changes: build the Nuxt image with `target: prod` (already in the Dockerfile), put real secrets in the env files (including `GQL_TOKEN`), terminate SSL at your proxy, keep Craft's GraphQL on the internal network, and keep the public GraphQL token off.
