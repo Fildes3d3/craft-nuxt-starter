@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { mockNuxtImport } from '@nuxt/test-utils/runtime'
+import { mockNuxtImport, registerEndpoint } from '@nuxt/test-utils/runtime'
 import type { CraftGql } from '~/queries/types'
 
 // ── mocks ────────────────────────────────────────────────────────────────────
@@ -23,7 +23,23 @@ interface GqlFetchOptions {
 }
 
 const fetchSpy = vi.fn<(url: string, options: GqlFetchOptions) => Promise<unknown>>()
-vi.stubGlobal('$fetch', fetchSpy)
+
+// The composable calls Nuxt's own $fetch, so a global stub never sees it, and
+// @nuxt/test-utils 4 rejects unregistered paths. Register /_gql and hand the
+// real request (method, the headers under test, parsed body) to the spy.
+registerEndpoint('/_gql', {
+  method: 'POST',
+  // test-utils passes an h3 v1 event: headers via event.headers, the original
+  // Request at event.web.request.
+  handler: async (event) => {
+    const h = event.headers
+    const headers: Record<string, string> = {}
+    if (h.get('x-craft-token')) headers['X-Craft-Token'] = h.get('x-craft-token')!
+    if (h.get('authorization')) headers.Authorization = h.get('authorization')!
+    const body = (await event.web!.request!.json()) as GqlFetchOptions['body']
+    return fetchSpy('/_gql', { method: event.method, headers, body })
+  },
+})
 
 const homeOp: CraftGql = { op: 'home', query: 'query Home { entry { title } }' }
 const pageOp: CraftGql = {
